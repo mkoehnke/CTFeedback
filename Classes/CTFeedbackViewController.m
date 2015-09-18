@@ -197,20 +197,22 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
 - (NSArray *)additionCellItems{
     NSMutableArray *result = [NSMutableArray array];
 
-	__weak CTFeedbackViewController *weakSelf = self;
-
-	self.additionCellItem = [CTFeedbackAdditionInfoCellItem new];
-    self.additionCellItem.value = CTFBLocalizedString(@"Additional detail");
-    self.additionCellItem.action = ^(CTFeedbackViewController *sender){
-		UIActionSheet *choiceSheet = [[UIActionSheet alloc] initWithTitle:nil
-                                                                 delegate:weakSelf
-                                                        cancelButtonTitle:CTFBLocalizedString(@"Cancel")
-                                                   destructiveButtonTitle:nil
-                                                        otherButtonTitles:CTFBLocalizedString(@"Camera"), CTFBLocalizedString(@"PhotoLibrary"), nil];
-		[choiceSheet showInView:weakSelf.view];
-    };
-
-    [result addObject:self.additionCellItem];
+    if (!self.hidesAdditionalInfoCell) {
+        __weak CTFeedbackViewController *weakSelf = self;
+        
+        self.additionCellItem = [CTFeedbackAdditionInfoCellItem new];
+        self.additionCellItem.value = CTFBLocalizedString(@"Additional detail");
+        self.additionCellItem.action = ^(CTFeedbackViewController *sender){
+            UIActionSheet *choiceSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                                     delegate:weakSelf
+                                                            cancelButtonTitle:CTFBLocalizedString(@"Cancel")
+                                                       destructiveButtonTitle:nil
+                                                            otherButtonTitles:CTFBLocalizedString(@"Camera"), CTFBLocalizedString(@"PhotoLibrary"), nil];
+            [choiceSheet showInView:weakSelf.view];
+        };
+        
+        [result addObject:self.additionCellItem];
+    }
 
     return [result copy];
 }
@@ -409,7 +411,6 @@ static NSString * const ATTACHMENT_FILENAME = @"screenshot.jpg";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-//    return 3;
     return [self.cellItems count];
 }
 
@@ -434,7 +435,7 @@ static NSString * const ATTACHMENT_FILENAME = @"screenshot.jpg";
         case CTFeedbackSectionInput:
             return nil;
         case CTFeedbackSectionScreenshot:
-            return CTFBLocalizedString(@"Additional Info");
+            return (!self.hidesAdditionalInfoCell) ? CTFBLocalizedString(@"Additional Info") : nil;
         case CTFeedbackSectionDeviceInfo:
             return CTFBLocalizedString(@"Device Info");
         case CTFeedbackSectionAppInfo:
@@ -450,6 +451,16 @@ static NSString * const ATTACHMENT_FILENAME = @"screenshot.jpg";
 {
     CTFeedbackCellItem *cellItem = self.cellItems[(NSUInteger)indexPath.section][(NSUInteger)indexPath.row];
     return cellItem.cellHeight;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return (section == CTFeedbackSectionScreenshot && self.hidesAdditionalInfoCell) ? 0.01 : tableView.sectionHeaderHeight;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return (section == CTFeedbackSectionScreenshot && self.hidesAdditionalInfoCell) ? 0.01 : tableView.sectionFooterHeight;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

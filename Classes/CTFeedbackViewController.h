@@ -30,6 +30,8 @@
 @property (nonatomic, assign) BOOL hidesAppVersionCell;
 @property (nonatomic, assign) BOOL hidesAppBuildCell;
 
+@property (nonatomic, assign) BOOL hidesAdditionalInfoCell;
+
 @property (nonatomic, readonly) NSString *platformString;
 @property (nonatomic, readonly) NSString *systemVersion;
 @property (nonatomic, readonly) NSString *appName;
