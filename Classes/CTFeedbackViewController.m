@@ -319,7 +319,8 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
 
 - (NSString *)mailSubject
 {
-    return [NSString stringWithFormat:@"%@: %@", self.appName, self.topics[self.selectedTopicIndex]];
+    NSString *selectedTopic = self.topics[self.selectedTopicIndex];
+    return (selectedTopic.length == 0) ? self.appName : [NSString stringWithFormat:@"%@: %@", self.appName, selectedTopic];
 }
 
 - (NSString *)mailBody

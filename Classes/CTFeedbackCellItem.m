@@ -78,11 +78,11 @@
 {
     self = [super init];
     if (self) {
-        self.textView = [[UITextView alloc] initWithFrame:CGRectMake(5, 0, 310, ContentCellHeight)];
+        self.textView = [[UITextView alloc] initWithFrame:CGRectZero];
         self.textView.text = self.content;
         self.textView.delegate = self;
         self.textView.scrollEnabled = NO;
-        self.textView.font = [UIFont systemFontOfSize:14];
+        self.textView.font = [UIFont systemFontOfSize:17.0];
         self.textView.backgroundColor = [UIColor clearColor];
     }
     return self;
@@ -92,6 +92,17 @@
 {
     [super configureCell:cell atIndexPath:indexPath];
 
+    CGFloat x = 5.0;
+    CGFloat y = 0.0;
+    CGFloat width = cell.bounds.size.width - (x * 2);
+    CGFloat height = ContentCellHeight;
+    
+    if ([cell respondsToSelector:@selector(separatorInset)]) {
+        x = cell.separatorInset.left;
+        width = cell.bounds.size.width - (cell.separatorInset.left + cell.separatorInset.right);
+    }
+    
+    [self.textView setFrame:CGRectMake(x, y, width, height)];
     [cell.contentView addSubview:self.textView];
 }
 
