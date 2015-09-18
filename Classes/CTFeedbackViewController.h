@@ -29,7 +29,6 @@
 @property (nonatomic, assign) BOOL hidesAppNameCell;
 @property (nonatomic, assign) BOOL hidesAppVersionCell;
 @property (nonatomic, assign) BOOL hidesAppBuildCell;
-
 @property (nonatomic, assign) BOOL hidesAdditionalInfoCell;
 
 @property (nonatomic, readonly) NSString *platformString;

@@ -169,23 +169,25 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
 
     __weak CTFeedbackViewController *weakSelf = self;
 
-    self.topicCellItem = [CTFeedbackTopicCellItem new];
-    self.topicCellItem.topic = self.localizedTopics[self.selectedTopicIndex];
-    self.topicCellItem.action = ^(CTFeedbackViewController *sender) {
-        CTFeedbackTopicsViewController *topicsViewController = [[CTFeedbackTopicsViewController alloc] initWithStyle:UITableViewStyleGrouped];
-        topicsViewController.topics = sender.topics;
-        topicsViewController.localizedTopics = sender.localizedTopics;
-        topicsViewController.action = ^(NSString *selectedTopic) {
-            weakSelf.selectedTopic = selectedTopic;
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:CTFeedbackSectionInput];
-            CTFeedbackTopicCellItem *cellItem = weakSelf.cellItems[(NSUInteger)indexPath.section][(NSUInteger)indexPath.row];
-            cellItem.topic = weakSelf.localizedTopics[weakSelf.selectedTopicIndex];
-            [weakSelf.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    if (self.topics != nil || self.localizedTopics != nil) {
+        self.topicCellItem = [CTFeedbackTopicCellItem new];
+        self.topicCellItem.topic = self.localizedTopics[self.selectedTopicIndex];
+        self.topicCellItem.action = ^(CTFeedbackViewController *sender) {
+            CTFeedbackTopicsViewController *topicsViewController = [[CTFeedbackTopicsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            topicsViewController.topics = sender.topics;
+            topicsViewController.localizedTopics = sender.localizedTopics;
+            topicsViewController.action = ^(NSString *selectedTopic) {
+                weakSelf.selectedTopic = selectedTopic;
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:CTFeedbackSectionInput];
+                CTFeedbackTopicCellItem *cellItem = weakSelf.cellItems[(NSUInteger)indexPath.section][(NSUInteger)indexPath.row];
+                cellItem.topic = weakSelf.localizedTopics[weakSelf.selectedTopicIndex];
+                [weakSelf.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+            };
+            
+            [sender.navigationController pushViewController:topicsViewController animated:YES];
         };
-
-        [sender.navigationController pushViewController:topicsViewController animated:YES];
-    };
-    [result addObject:self.topicCellItem];
+        [result addObject:self.topicCellItem];
+    }
 
     self.contentCellItem = [CTFeedbackContentCellItem new];
     [self.contentCellItem addObserver:self forKeyPath:@"cellHeight" options:NSKeyValueObservingOptionNew context:nil];
@@ -461,6 +463,13 @@ static NSString * const ATTACHMENT_FILENAME = @"screenshot.jpg";
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
     return (section == CTFeedbackSectionScreenshot && self.hidesAdditionalInfoCell) ? 0.01 : tableView.sectionFooterHeight;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    CTFeedbackCellItem *cellItem = self.cellItems[(NSUInteger)indexPath.section][(NSUInteger)indexPath.row];
+    if ([cellItem isEqual:self.contentCellItem]) {
+        [self.contentCellItem.textView becomeFirstResponder];
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
