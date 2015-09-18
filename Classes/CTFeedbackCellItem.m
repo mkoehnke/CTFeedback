@@ -99,7 +99,7 @@
     
     if ([cell respondsToSelector:@selector(separatorInset)]) {
         x = cell.separatorInset.left;
-        width = cell.bounds.size.width - (cell.separatorInset.left + cell.separatorInset.right);
+        width = cell.bounds.size.width - (cell.separatorInset.left * 2);
     }
     
     [self.textView setFrame:CGRectMake(x, y, width, height)];
